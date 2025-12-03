@@ -1,6 +1,7 @@
 package mcgotocol
 
 import (
+	s "bufio"
 	"bytes"
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
@@ -10,13 +11,15 @@ import (
 )
 
 type Connection struct {
-	serverBoundPacketRegistry *state.PacketRegistry
 	conn                      io.ReadWriter
+	reader                    *bufio.Reader
+	serverBoundPacketRegistry *state.PacketRegistry
 }
 
 func NewConnection(conn io.ReadWriter, registry *state.Registry) *Connection {
 	return &Connection{
 		conn:                      conn,
+		reader:                    bufio.NewReader(conn),
 		serverBoundPacketRegistry: registry.ServerBound,
 	}
 }
@@ -26,13 +29,13 @@ func (c *Connection) SetState(registry *state.Registry) {
 }
 
 func (c *Connection) ReadPacket() (proto.Packet, error) {
-	length, err := codec.ReadVarInt(c.conn)
+	length, err := codec.ReadVarInt(c.reader)
 	if err != nil {
 		return nil, err
 	}
 
 	buf := make([]byte, length)
-	_, err = io.ReadFull(c.conn, buf)
+	_, err = io.ReadFull(c.reader, buf)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +70,7 @@ func (c *Connection) WritePacket(p proto.Packet) error {
 	return err
 }
 
+// RawConn Is not recommended for reading because it's not buffered.
 func (c *Connection) RawConn() io.ReadWriter {
 	return c.conn
 }
