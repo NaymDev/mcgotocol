@@ -30,6 +30,10 @@ func (c *Connection) SetPacketRegistry(packetRegistry *state.PacketRegistry) {
 	c.packetRegistry = packetRegistry
 }
 
+func (c *Connection) SetCompressionThreshold(threshold int) {
+	c.compressionThreshold = threshold
+}
+
 func (c *Connection) ReadPacket() (proto.Packet, error) {
 	length, err := codec.ReadVarInt(c.reader)
 	if err != nil {
