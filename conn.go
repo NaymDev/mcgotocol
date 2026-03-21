@@ -1,31 +1,29 @@
 package mcgotocol
 
 import (
-	"bufio"
 	"bytes"
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state"
 	"io"
-	"net"
 )
 
 type Connection struct {
-	conn                      io.ReadWriter
-	reader                    *bufio.Reader
-	serverBoundPacketRegistry *state.PacketRegistry
+	writer         io.Writer
+	reader         io.Reader
+	packetRegistry *state.PacketRegistry
 }
 
-func NewConnection(conn io.ReadWriter, registry *state.Registry) *Connection {
+func NewConnection(reader io.Reader, writer io.Writer, packetRegistry *state.PacketRegistry) *Connection {
 	return &Connection{
-		conn:                      conn,
-		reader:                    bufio.NewReader(conn),
-		serverBoundPacketRegistry: registry.ServerBound,
+		writer:         writer,
+		reader:         reader,
+		packetRegistry: packetRegistry,
 	}
 }
 
-func (c *Connection) SetState(registry *state.Registry) {
-	c.serverBoundPacketRegistry = registry.ServerBound
+func (c *Connection) SetPacketRegistry(packetRegistry *state.PacketRegistry) {
+	c.packetRegistry = packetRegistry
 }
 
 func (c *Connection) ReadPacket() (proto.Packet, error) {
@@ -47,7 +45,7 @@ func (c *Connection) ReadPacket() (proto.Packet, error) {
 		return nil, err
 	}
 
-	return c.serverBoundPacketRegistry.Decode(int32(packetID), br)
+	return c.packetRegistry.Decode(int32(packetID), br)
 }
 
 func (c *Connection) WritePacket(p proto.Packet) error {
@@ -62,33 +60,10 @@ func (c *Connection) WritePacket(p proto.Packet) error {
 	}
 
 	packetData := buf.Bytes()
-	if err := codec.WriteVarInt(c.conn, codec.VarInt(len(packetData))); err != nil {
+	if err := codec.WriteVarInt(c.writer, codec.VarInt(len(packetData))); err != nil {
 		return err
 	}
 
-	_, err := c.conn.Write(packetData)
+	_, err := c.writer.Write(packetData)
 	return err
-}
-
-// RawConn Is not recommended for reading because it's not buffered.
-func (c *Connection) RawConn() io.ReadWriter {
-	return c.conn
-}
-
-func (c *Connection) Close() error {
-	if closer, ok := c.conn.(io.Closer); ok {
-		return closer.Close()
-	}
-	return nil
-}
-
-func (c *Connection) RemoteAddr() string {
-	if addrProvider, ok := c.conn.(net.Conn); ok {
-		return addrProvider.RemoteAddr().String()
-	}
-	return "unknown"
-}
-
-func (c *Connection) State() string {
-	return c.serverBoundPacketRegistry.State
 }
