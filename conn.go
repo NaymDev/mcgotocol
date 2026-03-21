@@ -20,9 +20,10 @@ type Connection struct {
 
 func NewConnection(reader io.Reader, writer io.Writer, packetRegistry *state.PacketRegistry) *Connection {
 	return &Connection{
-		writer:         writer,
-		reader:         reader,
-		packetRegistry: packetRegistry,
+		writer:               writer,
+		reader:               reader,
+		packetRegistry:       packetRegistry,
+		compressionThreshold: -1,
 	}
 }
 
