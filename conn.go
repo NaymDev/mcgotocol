@@ -1,7 +1,7 @@
 package mcgotocol
 
 import (
-	s "bufio"
+	"bufio"
 	"bytes"
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
