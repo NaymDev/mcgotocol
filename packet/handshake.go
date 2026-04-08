@@ -1,13 +1,14 @@
 package packet
 
 import (
+	"io"
+
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state/states"
-	"io"
 )
 
-type HandshakeIntent codec.VarInt
+type HandshakeIntent = codec.VarInt
 
 const (
 	StatusHandshakeIntent = HandshakeIntent(states.StatusState)
