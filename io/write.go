@@ -11,11 +11,11 @@ import (
 func WritePacket(w io.Writer, p proto.Packet) error {
 	var buf bytes.Buffer
 
-	if err := p.Encode(&buf); err != nil {
+	if err := codec.WriteVarInt(&buf, codec.VarInt(p.ID())); err != nil {
 		return err
 	}
 
-	if err := codec.WriteVarInt(&buf, codec.VarInt(p.ID())); err != nil {
+	if err := p.Encode(&buf); err != nil {
 		return err
 	}
 
