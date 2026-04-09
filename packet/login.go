@@ -7,6 +7,26 @@ import (
 	"github.com/NaymDev/mcgotocol/proto"
 )
 
+type ClientDisconnect struct {
+	Reason codec.Chat
+}
+
+var _ proto.Packet = (*ClientDisconnect)(nil)
+
+func (p *ClientDisconnect) ID() int32 {
+	return 0x00
+}
+
+func (p *ClientDisconnect) Encode(writer io.Writer) error {
+	return codec.WriteChat(writer, p.Reason)
+}
+
+func (p *ClientDisconnect) Decode(reader io.Reader) error {
+	var err error
+	p.Reason, err = codec.ReadChat(reader)
+	return err
+}
+
 type ServerLoginStart struct {
 	Name string
 }

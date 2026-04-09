@@ -27,6 +27,7 @@ func InitRegistries() {
 	Login.ServerBound.Register(&packet.ServerLoginStart{})
 	Login.ServerBound.Register(&packet.ServerEncryptionResponse{})
 
+	Login.ClientBound.Register(&packet.ClientDisconnect{})
 	Login.ClientBound.Register(&packet.ClientEncryptionRequest{})
 	Login.ClientBound.Register(&packet.ClientLoginSuccess{})
 
