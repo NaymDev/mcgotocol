@@ -8,26 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type ClientKeepAlive struct {
-	KeepAliveID codec.VarInt
-}
-
-var _ proto.Packet = (*ClientKeepAlive)(nil)
-
-func (p *ClientKeepAlive) ID() int32 {
-	return 0x00
-}
-
-func (p *ClientKeepAlive) Encode(writer io.Writer) error {
-	return codec.WriteVarInt(writer, p.KeepAliveID)
-}
-
-func (p *ClientKeepAlive) Decode(reader io.Reader) error {
-	var err error
-	p.KeepAliveID, err = codec.ReadVarInt(reader)
-	return err
-}
-
 type ServerKeepAlive struct {
 	KeepAliveID codec.VarInt
 }
@@ -43,6 +23,26 @@ func (p *ServerKeepAlive) Encode(writer io.Writer) error {
 }
 
 func (p *ServerKeepAlive) Decode(reader io.Reader) error {
+	var err error
+	p.KeepAliveID, err = codec.ReadVarInt(reader)
+	return err
+}
+
+type ClientKeepAlive struct {
+	KeepAliveID codec.VarInt
+}
+
+var _ proto.Packet = (*ClientKeepAlive)(nil)
+
+func (p *ClientKeepAlive) ID() int32 {
+	return 0x00
+}
+
+func (p *ClientKeepAlive) Encode(writer io.Writer) error {
+	return codec.WriteVarInt(writer, p.KeepAliveID)
+}
+
+func (p *ClientKeepAlive) Decode(reader io.Reader) error {
 	var err error
 	p.KeepAliveID, err = codec.ReadVarInt(reader)
 	return err

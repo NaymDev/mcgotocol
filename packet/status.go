@@ -23,26 +23,6 @@ func (p *ServerStatusRequest) Decode(reader io.Reader) error {
 	return nil
 }
 
-type ClientStatusResponse struct {
-	JSONResponse string
-}
-
-var _ proto.Packet = (*ClientStatusResponse)(nil)
-
-func (p ClientStatusResponse) ID() int32 {
-	return 0x00
-}
-
-func (p ClientStatusResponse) Encode(writer io.Writer) error {
-	return codec.WriteString(writer, p.JSONResponse)
-}
-
-func (p ClientStatusResponse) Decode(reader io.Reader) error {
-	var err error
-	p.JSONResponse, err = codec.ReadString(reader)
-	return err
-}
-
 type ServerStatusPing struct {
 	Payload int64
 }
@@ -60,6 +40,26 @@ func (p *ServerStatusPing) Encode(writer io.Writer) error {
 func (p *ServerStatusPing) Decode(reader io.Reader) error {
 	var err error
 	p.Payload, err = codec.ReadLong(reader)
+	return err
+}
+
+type ClientStatusResponse struct {
+	JSONResponse string
+}
+
+var _ proto.Packet = (*ClientStatusResponse)(nil)
+
+func (p ClientStatusResponse) ID() int32 {
+	return 0x00
+}
+
+func (p ClientStatusResponse) Encode(writer io.Writer) error {
+	return codec.WriteString(writer, p.JSONResponse)
+}
+
+func (p ClientStatusResponse) Decode(reader io.Reader) error {
+	var err error
+	p.JSONResponse, err = codec.ReadString(reader)
 	return err
 }
 
