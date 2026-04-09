@@ -27,6 +27,26 @@ func (p *ClientDisconnect) Decode(reader io.Reader) error {
 	return err
 }
 
+type ClientSetCompression struct {
+	Threshold codec.VarInt
+}
+
+var _ proto.Packet = (*ClientSetCompression)(nil)
+
+func (p *ClientSetCompression) ID() int32 {
+	return 0x03
+}
+
+func (p *ClientSetCompression) Encode(writer io.Writer) error {
+	return codec.WriteVarInt(writer, p.Threshold)
+}
+
+func (p *ClientSetCompression) Decode(reader io.Reader) error {
+	var err error
+	p.Threshold, err = codec.ReadVarInt(reader)
+	return err
+}
+
 type ServerLoginStart struct {
 	Name string
 }

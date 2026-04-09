@@ -30,6 +30,7 @@ func InitRegistries() {
 	Login.ClientBound.Register(&packet.ClientDisconnect{})
 	Login.ClientBound.Register(&packet.ClientEncryptionRequest{})
 	Login.ClientBound.Register(&packet.ClientLoginSuccess{})
+	Login.ClientBound.Register(&packet.ClientSetCompression{})
 
 	// PLAY
 	Play.ServerBound.Register(&packet.ServerKeepAlive{})
