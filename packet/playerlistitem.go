@@ -1,11 +1,12 @@
 package packet
 
 import (
+	"io"
+
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/profile"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/google/uuid"
-	"io"
 )
 
 type PlayerListAction int32
@@ -73,22 +74,22 @@ type ClientPlayerListItem struct {
 
 var _ proto.Packet = (*ClientPlayerListItem)(nil)
 
-func (c *ClientPlayerListItem) ID() int32 {
+func (p *ClientPlayerListItem) ID() int32 {
 	return 0x38
 }
 
-func (c *ClientPlayerListItem) Encode(writer io.Writer) error {
-	if err := codec.WriteVarInt(writer, codec.VarInt(c.Action)); err != nil {
+func (p *ClientPlayerListItem) Encode(writer io.Writer) error {
+	if err := codec.WriteVarInt(writer, codec.VarInt(p.Action)); err != nil {
 		return err
 	}
-	if err := codec.WriteVarInt(writer, codec.VarInt(len(c.Players))); err != nil {
+	if err := codec.WriteVarInt(writer, codec.VarInt(len(p.Players))); err != nil {
 		return err
 	}
-	for _, player := range c.Players {
+	for _, player := range p.Players {
 		if err := codec.WriteUUID(writer, player.UUID); err != nil {
 			return err
 		}
-		switch c.Action {
+		switch p.Action {
 		case AddPlayer:
 			if err := codec.WriteString(writer, player.Name); err != nil {
 				return err
@@ -138,19 +139,19 @@ func (c *ClientPlayerListItem) Encode(writer io.Writer) error {
 	return nil
 }
 
-func (c *ClientPlayerListItem) Decode(reader io.Reader) error {
+func (p *ClientPlayerListItem) Decode(reader io.Reader) error {
 	actionInt, err := codec.ReadVarInt(reader)
 	if err != nil {
 		return err
 	}
-	c.Action = PlayerListAction(actionInt)
+	p.Action = PlayerListAction(actionInt)
 
 	playerCount, err := codec.ReadVarInt(reader)
 	if err != nil {
 		return err
 	}
 
-	c.Players = make([]PlayerProfile, playerCount)
+	p.Players = make([]PlayerProfile, playerCount)
 
 	for i := 0; i < int(playerCount); i++ {
 		player := PlayerProfile{}
@@ -161,7 +162,7 @@ func (c *ClientPlayerListItem) Decode(reader io.Reader) error {
 		}
 		player.UUID = u
 
-		switch c.Action {
+		switch p.Action {
 		case AddPlayer:
 			name, err := codec.ReadString(reader)
 			if err != nil {
@@ -244,7 +245,7 @@ func (c *ClientPlayerListItem) Decode(reader io.Reader) error {
 		case RemovePlayer:
 		}
 
-		c.Players[i] = player
+		p.Players[i] = player
 	}
 
 	return nil

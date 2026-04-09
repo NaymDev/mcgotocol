@@ -1,24 +1,25 @@
 package packet
 
 import (
+	"io"
+
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
-	"io"
 )
 
 type ServerStatusRequest struct{}
 
 var _ proto.Packet = (*ServerStatusRequest)(nil)
 
-func (s *ServerStatusRequest) ID() int32 {
+func (p *ServerStatusRequest) ID() int32 {
 	return 0x00
 }
 
-func (s *ServerStatusRequest) Encode(writer io.Writer) error {
+func (p *ServerStatusRequest) Encode(writer io.Writer) error {
 	return nil
 }
 
-func (s *ServerStatusRequest) Decode(reader io.Reader) error {
+func (p *ServerStatusRequest) Decode(reader io.Reader) error {
 	return nil
 }
 
@@ -28,17 +29,17 @@ type ClientStatusResponse struct {
 
 var _ proto.Packet = (*ClientStatusResponse)(nil)
 
-func (c ClientStatusResponse) ID() int32 {
+func (p ClientStatusResponse) ID() int32 {
 	return 0x00
 }
 
-func (c ClientStatusResponse) Encode(writer io.Writer) error {
-	return codec.WriteString(writer, c.JSONResponse)
+func (p ClientStatusResponse) Encode(writer io.Writer) error {
+	return codec.WriteString(writer, p.JSONResponse)
 }
 
-func (c ClientStatusResponse) Decode(reader io.Reader) error {
+func (p ClientStatusResponse) Decode(reader io.Reader) error {
 	var err error
-	c.JSONResponse, err = codec.ReadString(reader)
+	p.JSONResponse, err = codec.ReadString(reader)
 	return err
 }
 
@@ -48,17 +49,17 @@ type ServerStatusPing struct {
 
 var _ proto.Packet = (*ServerStatusPing)(nil)
 
-func (s *ServerStatusPing) ID() int32 {
+func (p *ServerStatusPing) ID() int32 {
 	return 0x01
 }
 
-func (s *ServerStatusPing) Encode(writer io.Writer) error {
-	return codec.WriteLong(writer, s.Payload)
+func (p *ServerStatusPing) Encode(writer io.Writer) error {
+	return codec.WriteLong(writer, p.Payload)
 }
 
-func (s *ServerStatusPing) Decode(reader io.Reader) error {
+func (p *ServerStatusPing) Decode(reader io.Reader) error {
 	var err error
-	s.Payload, err = codec.ReadLong(reader)
+	p.Payload, err = codec.ReadLong(reader)
 	return err
 }
 
@@ -68,16 +69,16 @@ type ClientStatusPong struct {
 
 var _ proto.Packet = (*ClientStatusPong)(nil)
 
-func (c *ClientStatusPong) ID() int32 {
+func (p *ClientStatusPong) ID() int32 {
 	return 0x01
 }
 
-func (c *ClientStatusPong) Encode(writer io.Writer) error {
-	return codec.WriteLong(writer, c.Payload)
+func (p *ClientStatusPong) Encode(writer io.Writer) error {
+	return codec.WriteLong(writer, p.Payload)
 }
 
-func (c *ClientStatusPong) Decode(reader io.Reader) error {
+func (p *ClientStatusPong) Decode(reader io.Reader) error {
 	var err error
-	c.Payload, err = codec.ReadLong(reader)
+	p.Payload, err = codec.ReadLong(reader)
 	return err
 }

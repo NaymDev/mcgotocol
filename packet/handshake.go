@@ -24,38 +24,38 @@ type ServerHandshake struct {
 
 var _ proto.Packet = (*ServerHandshake)(nil)
 
-func (s *ServerHandshake) ID() int32 {
+func (p *ServerHandshake) ID() int32 {
 	return 0x00
 }
 
-func (s *ServerHandshake) Encode(writer io.Writer) error {
-	if err := codec.WriteVarInt(writer, s.ProtocolVersion); err != nil {
+func (p *ServerHandshake) Encode(writer io.Writer) error {
+	if err := codec.WriteVarInt(writer, p.ProtocolVersion); err != nil {
 		return err
 	}
-	if err := codec.WriteString(writer, s.ServerAddress); err != nil {
+	if err := codec.WriteString(writer, p.ServerAddress); err != nil {
 		return err
 	}
-	if err := codec.WriteUShort(writer, s.ServerPort); err != nil {
+	if err := codec.WriteUShort(writer, p.ServerPort); err != nil {
 		return err
 	}
-	if err := codec.WriteVarInt(writer, s.NextState); err != nil {
+	if err := codec.WriteVarInt(writer, p.NextState); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *ServerHandshake) Decode(reader io.Reader) error {
+func (p *ServerHandshake) Decode(reader io.Reader) error {
 	var err error
-	if s.ProtocolVersion, err = codec.ReadVarInt(reader); err != nil {
+	if p.ProtocolVersion, err = codec.ReadVarInt(reader); err != nil {
 		return err
 	}
-	if s.ServerAddress, err = codec.ReadString(reader); err != nil {
+	if p.ServerAddress, err = codec.ReadString(reader); err != nil {
 		return err
 	}
-	if s.ServerPort, err = codec.ReadUShort(reader); err != nil {
+	if p.ServerPort, err = codec.ReadUShort(reader); err != nil {
 		return err
 	}
-	if s.NextState, err = codec.ReadVarInt(reader); err != nil {
+	if p.NextState, err = codec.ReadVarInt(reader); err != nil {
 		return err
 	}
 	return nil

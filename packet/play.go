@@ -1,10 +1,11 @@
 package packet
 
 import (
+	"io"
+
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/google/uuid"
-	"io"
 )
 
 type ClientKeepAlive struct {
@@ -13,17 +14,17 @@ type ClientKeepAlive struct {
 
 var _ proto.Packet = (*ClientKeepAlive)(nil)
 
-func (c *ClientKeepAlive) ID() int32 {
+func (p *ClientKeepAlive) ID() int32 {
 	return 0x00
 }
 
-func (c *ClientKeepAlive) Encode(writer io.Writer) error {
-	return codec.WriteVarInt(writer, c.KeepAliveID)
+func (p *ClientKeepAlive) Encode(writer io.Writer) error {
+	return codec.WriteVarInt(writer, p.KeepAliveID)
 }
 
-func (c *ClientKeepAlive) Decode(reader io.Reader) error {
+func (p *ClientKeepAlive) Decode(reader io.Reader) error {
 	var err error
-	c.KeepAliveID, err = codec.ReadVarInt(reader)
+	p.KeepAliveID, err = codec.ReadVarInt(reader)
 	return err
 }
 
@@ -33,17 +34,17 @@ type ServerKeepAlive struct {
 
 var _ proto.Packet = (*ServerKeepAlive)(nil)
 
-func (c *ServerKeepAlive) ID() int32 {
+func (p *ServerKeepAlive) ID() int32 {
 	return 0x00
 }
 
-func (c *ServerKeepAlive) Encode(writer io.Writer) error {
-	return codec.WriteVarInt(writer, c.KeepAliveID)
+func (p *ServerKeepAlive) Encode(writer io.Writer) error {
+	return codec.WriteVarInt(writer, p.KeepAliveID)
 }
 
-func (c *ServerKeepAlive) Decode(reader io.Reader) error {
+func (p *ServerKeepAlive) Decode(reader io.Reader) error {
 	var err error
-	c.KeepAliveID, err = codec.ReadVarInt(reader)
+	p.KeepAliveID, err = codec.ReadVarInt(reader)
 	return err
 }
 
@@ -59,62 +60,62 @@ type ClientJoinGame struct {
 
 var _ proto.Packet = (*ClientJoinGame)(nil)
 
-func (c *ClientJoinGame) ID() int32 {
+func (p *ClientJoinGame) ID() int32 {
 	return 0x01
 }
 
-func (c *ClientJoinGame) Encode(writer io.Writer) error {
-	if err := codec.WriteInt(writer, c.EntityID); err != nil {
+func (p *ClientJoinGame) Encode(writer io.Writer) error {
+	if err := codec.WriteInt(writer, p.EntityID); err != nil {
 		return err
 	}
-	if err := codec.WriteUByte(writer, uint8(c.Gamemode)); err != nil {
+	if err := codec.WriteUByte(writer, uint8(p.Gamemode)); err != nil {
 		return err
 	}
-	if err := codec.WriteByte(writer, c.Dimension); err != nil {
+	if err := codec.WriteByte(writer, p.Dimension); err != nil {
 		return err
 	}
-	if err := codec.WriteUByte(writer, c.Difficulty); err != nil {
+	if err := codec.WriteUByte(writer, p.Difficulty); err != nil {
 		return err
 	}
-	if err := codec.WriteUByte(writer, c.MaxPlayers); err != nil {
+	if err := codec.WriteUByte(writer, p.MaxPlayers); err != nil {
 		return err
 	}
-	if err := codec.WriteString(writer, c.LevelType); err != nil {
+	if err := codec.WriteString(writer, p.LevelType); err != nil {
 		return err
 	}
-	if err := codec.WriteBool(writer, c.ReducedDebugInfo); err != nil {
+	if err := codec.WriteBool(writer, p.ReducedDebugInfo); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientJoinGame) Decode(reader io.Reader) error {
+func (p *ClientJoinGame) Decode(reader io.Reader) error {
 	var err error
-	c.EntityID, err = codec.ReadInt(reader)
+	p.EntityID, err = codec.ReadInt(reader)
 	if err != nil {
 		return err
 	}
-	c.Gamemode, err = codec.ReadUByte(reader)
+	p.Gamemode, err = codec.ReadUByte(reader)
 	if err != nil {
 		return err
 	}
-	c.Dimension, err = codec.ReadByte(reader)
+	p.Dimension, err = codec.ReadByte(reader)
 	if err != nil {
 		return err
 	}
-	c.Difficulty, err = codec.ReadUByte(reader)
+	p.Difficulty, err = codec.ReadUByte(reader)
 	if err != nil {
 		return err
 	}
-	c.MaxPlayers, err = codec.ReadUByte(reader)
+	p.MaxPlayers, err = codec.ReadUByte(reader)
 	if err != nil {
 		return err
 	}
-	c.LevelType, err = codec.ReadString(reader)
+	p.LevelType, err = codec.ReadString(reader)
 	if err != nil {
 		return err
 	}
-	c.ReducedDebugInfo, err = codec.ReadBool(reader)
+	p.ReducedDebugInfo, err = codec.ReadBool(reader)
 	if err != nil {
 		return err
 	}
@@ -129,17 +130,17 @@ type ClientSetSpawnPosition struct {
 
 var _ proto.Packet = (*ClientSetSpawnPosition)(nil)
 
-func (c *ClientSetSpawnPosition) ID() int32 {
+func (p *ClientSetSpawnPosition) ID() int32 {
 	return 0x05
 }
 
-func (c *ClientSetSpawnPosition) Encode(writer io.Writer) error {
-	return codec.WritePosition(writer, c.X, c.Y, c.Z)
+func (p *ClientSetSpawnPosition) Encode(writer io.Writer) error {
+	return codec.WritePosition(writer, p.X, p.Y, p.Z)
 }
 
-func (c *ClientSetSpawnPosition) Decode(reader io.Reader) error {
+func (p *ClientSetSpawnPosition) Decode(reader io.Reader) error {
 	var err error
-	c.X, c.Y, c.Z, err = codec.ReadPosition(reader)
+	p.X, p.Y, p.Z, err = codec.ReadPosition(reader)
 	return err
 }
 
@@ -164,50 +165,50 @@ type ClientPlayerPositionAndLook struct {
 
 var _ proto.Packet = (*ClientPlayerPositionAndLook)(nil)
 
-func (c *ClientPlayerPositionAndLook) ID() int32 {
+func (p *ClientPlayerPositionAndLook) ID() int32 {
 	return 0x08
 }
 
-func (c *ClientPlayerPositionAndLook) Encode(writer io.Writer) error {
-	if err := codec.WriteDouble(writer, c.X); err != nil {
+func (p *ClientPlayerPositionAndLook) Encode(writer io.Writer) error {
+	if err := codec.WriteDouble(writer, p.X); err != nil {
 		return err
 	}
-	if err := codec.WriteDouble(writer, c.Y); err != nil {
+	if err := codec.WriteDouble(writer, p.Y); err != nil {
 		return err
 	}
-	if err := codec.WriteDouble(writer, c.Z); err != nil {
+	if err := codec.WriteDouble(writer, p.Z); err != nil {
 		return err
 	}
-	if err := codec.WriteFloat(writer, c.Yaw); err != nil {
+	if err := codec.WriteFloat(writer, p.Yaw); err != nil {
 		return err
 	}
-	if err := codec.WriteFloat(writer, c.Pitch); err != nil {
+	if err := codec.WriteFloat(writer, p.Pitch); err != nil {
 		return err
 	}
-	if err := codec.WriteUByte(writer, c.Flags); err != nil {
+	if err := codec.WriteUByte(writer, p.Flags); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientPlayerPositionAndLook) Decode(reader io.Reader) error {
+func (p *ClientPlayerPositionAndLook) Decode(reader io.Reader) error {
 	var err error
-	if c.X, err = codec.ReadDouble(reader); err != nil {
+	if p.X, err = codec.ReadDouble(reader); err != nil {
 		return err
 	}
-	if c.Y, err = codec.ReadDouble(reader); err != nil {
+	if p.Y, err = codec.ReadDouble(reader); err != nil {
 		return err
 	}
-	if c.Z, err = codec.ReadDouble(reader); err != nil {
+	if p.Z, err = codec.ReadDouble(reader); err != nil {
 		return err
 	}
-	if c.Yaw, err = codec.ReadFloat(reader); err != nil {
+	if p.Yaw, err = codec.ReadFloat(reader); err != nil {
 		return err
 	}
-	if c.Pitch, err = codec.ReadFloat(reader); err != nil {
+	if p.Pitch, err = codec.ReadFloat(reader); err != nil {
 		return err
 	}
-	if c.Flags, err = codec.ReadUByte(reader); err != nil {
+	if p.Flags, err = codec.ReadUByte(reader); err != nil {
 		return err
 	}
 	return nil
@@ -227,68 +228,68 @@ type ClientSpawnPlayer struct {
 
 var _ proto.Packet = (*ClientSpawnPlayer)(nil)
 
-func (c *ClientSpawnPlayer) ID() int32 {
+func (p *ClientSpawnPlayer) ID() int32 {
 	return 0x0C
 }
 
-func (c *ClientSpawnPlayer) Encode(writer io.Writer) error {
-	if err := codec.WriteVarInt(writer, c.EntityID); err != nil {
+func (p *ClientSpawnPlayer) Encode(writer io.Writer) error {
+	if err := codec.WriteVarInt(writer, p.EntityID); err != nil {
 		return err
 	}
-	if err := codec.WriteUUID(writer, c.PlayerUUID); err != nil {
+	if err := codec.WriteUUID(writer, p.PlayerUUID); err != nil {
 		return err
 	}
-	if err := codec.WriteInt(writer, c.X); err != nil {
+	if err := codec.WriteInt(writer, p.X); err != nil {
 		return err
 	}
-	if err := codec.WriteInt(writer, c.Y); err != nil {
+	if err := codec.WriteInt(writer, p.Y); err != nil {
 		return err
 	}
-	if err := codec.WriteInt(writer, c.Z); err != nil {
+	if err := codec.WriteInt(writer, p.Z); err != nil {
 		return err
 	}
-	if err := codec.WriteAngle(writer, c.Yaw); err != nil {
+	if err := codec.WriteAngle(writer, p.Yaw); err != nil {
 		return err
 	}
-	if err := codec.WriteAngle(writer, c.Pitch); err != nil {
+	if err := codec.WriteAngle(writer, p.Pitch); err != nil {
 		return err
 	}
-	if err := codec.WriteShort(writer, c.CurrentItem); err != nil {
+	if err := codec.WriteShort(writer, p.CurrentItem); err != nil {
 		return err
 	}
-	if err := codec.WriteMetadata(writer, c.Metadata); err != nil {
+	if err := codec.WriteMetadata(writer, p.Metadata); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientSpawnPlayer) Decode(reader io.Reader) error {
+func (p *ClientSpawnPlayer) Decode(reader io.Reader) error {
 	var err error
-	if c.EntityID, err = codec.ReadVarInt(reader); err != nil {
+	if p.EntityID, err = codec.ReadVarInt(reader); err != nil {
 		return err
 	}
-	if c.PlayerUUID, err = codec.ReadUUID(reader); err != nil {
+	if p.PlayerUUID, err = codec.ReadUUID(reader); err != nil {
 		return err
 	}
-	if c.X, err = codec.ReadInt(reader); err != nil {
+	if p.X, err = codec.ReadInt(reader); err != nil {
 		return err
 	}
-	if c.Y, err = codec.ReadInt(reader); err != nil {
+	if p.Y, err = codec.ReadInt(reader); err != nil {
 		return err
 	}
-	if c.Z, err = codec.ReadInt(reader); err != nil {
+	if p.Z, err = codec.ReadInt(reader); err != nil {
 		return err
 	}
-	if c.Yaw, err = codec.ReadAngle(reader); err != nil {
+	if p.Yaw, err = codec.ReadAngle(reader); err != nil {
 		return err
 	}
-	if c.Pitch, err = codec.ReadAngle(reader); err != nil {
+	if p.Pitch, err = codec.ReadAngle(reader); err != nil {
 		return err
 	}
-	if c.CurrentItem, err = codec.ReadShort(reader); err != nil {
+	if p.CurrentItem, err = codec.ReadShort(reader); err != nil {
 		return err
 	}
-	if c.Metadata, err = codec.ReadMetadata(reader); err != nil {
+	if p.Metadata, err = codec.ReadMetadata(reader); err != nil {
 		return err
 	}
 	return nil
@@ -302,32 +303,32 @@ type ClientPlayerAbilities struct {
 
 var _ proto.Packet = (*ClientPlayerAbilities)(nil)
 
-func (c *ClientPlayerAbilities) ID() int32 {
+func (p *ClientPlayerAbilities) ID() int32 {
 	return 0x39
 }
 
-func (c *ClientPlayerAbilities) Encode(writer io.Writer) error {
-	if err := codec.WriteByte(writer, c.Flags); err != nil {
+func (p *ClientPlayerAbilities) Encode(writer io.Writer) error {
+	if err := codec.WriteByte(writer, p.Flags); err != nil {
 		return err
 	}
-	if err := codec.WriteFloat(writer, c.FlyingSpeed); err != nil {
+	if err := codec.WriteFloat(writer, p.FlyingSpeed); err != nil {
 		return err
 	}
-	if err := codec.WriteFloat(writer, c.FieldOfViewModifier); err != nil {
+	if err := codec.WriteFloat(writer, p.FieldOfViewModifier); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientPlayerAbilities) Decode(reader io.Reader) error {
+func (p *ClientPlayerAbilities) Decode(reader io.Reader) error {
 	var err error
-	if c.Flags, err = codec.ReadByte(reader); err != nil {
+	if p.Flags, err = codec.ReadByte(reader); err != nil {
 		return err
 	}
-	if c.FlyingSpeed, err = codec.ReadFloat(reader); err != nil {
+	if p.FlyingSpeed, err = codec.ReadFloat(reader); err != nil {
 		return err
 	}
-	if c.FieldOfViewModifier, err = codec.ReadFloat(reader); err != nil {
+	if p.FieldOfViewModifier, err = codec.ReadFloat(reader); err != nil {
 		return err
 	}
 	return nil

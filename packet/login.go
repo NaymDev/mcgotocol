@@ -13,17 +13,17 @@ type ServerLoginStart struct {
 
 var _ proto.Packet = (*ServerLoginStart)(nil)
 
-func (s *ServerLoginStart) ID() int32 {
+func (p *ServerLoginStart) ID() int32 {
 	return 0x00
 }
 
-func (s *ServerLoginStart) Encode(writer io.Writer) error {
-	return codec.WriteString(writer, s.Name)
+func (p *ServerLoginStart) Encode(writer io.Writer) error {
+	return codec.WriteString(writer, p.Name)
 }
 
-func (s *ServerLoginStart) Decode(reader io.Reader) error {
+func (p *ServerLoginStart) Decode(reader io.Reader) error {
 	var err error
-	s.Name, err = codec.ReadString(reader)
+	p.Name, err = codec.ReadString(reader)
 	return err
 }
 
@@ -34,26 +34,26 @@ type ClientLoginSuccess struct {
 
 var _ proto.Packet = (*ClientLoginSuccess)(nil)
 
-func (c *ClientLoginSuccess) ID() int32 {
+func (p *ClientLoginSuccess) ID() int32 {
 	return 0x02
 }
 
-func (c *ClientLoginSuccess) Encode(writer io.Writer) error {
-	if err := codec.WriteString(writer, c.UUID); err != nil {
+func (p *ClientLoginSuccess) Encode(writer io.Writer) error {
+	if err := codec.WriteString(writer, p.UUID); err != nil {
 		return err
 	}
-	if err := codec.WriteString(writer, c.Username); err != nil {
+	if err := codec.WriteString(writer, p.Username); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientLoginSuccess) Decode(reader io.Reader) error {
+func (p *ClientLoginSuccess) Decode(reader io.Reader) error {
 	var err error
-	if c.UUID, err = codec.ReadString(reader); err != nil {
+	if p.UUID, err = codec.ReadString(reader); err != nil {
 		return err
 	}
-	if c.Username, err = codec.ReadString(reader); err != nil {
+	if p.Username, err = codec.ReadString(reader); err != nil {
 		return err
 	}
 	return nil
@@ -67,32 +67,32 @@ type ClientEncryptionRequest struct {
 
 var _ proto.Packet = (*ClientEncryptionRequest)(nil)
 
-func (c *ClientEncryptionRequest) ID() int32 {
+func (p *ClientEncryptionRequest) ID() int32 {
 	return 0x01
 }
 
-func (c *ClientEncryptionRequest) Encode(writer io.Writer) error {
-	if err := codec.WriteString(writer, c.ServerID); err != nil {
+func (p *ClientEncryptionRequest) Encode(writer io.Writer) error {
+	if err := codec.WriteString(writer, p.ServerID); err != nil {
 		return err
 	}
-	if err := codec.WriteByteArray(writer, c.PublicKey); err != nil {
+	if err := codec.WriteByteArray(writer, p.PublicKey); err != nil {
 		return err
 	}
-	if err := codec.WriteByteArray(writer, c.VerifyToken); err != nil {
+	if err := codec.WriteByteArray(writer, p.VerifyToken); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *ClientEncryptionRequest) Decode(reader io.Reader) error {
+func (p *ClientEncryptionRequest) Decode(reader io.Reader) error {
 	var err error
-	if c.ServerID, err = codec.ReadString(reader); err != nil {
+	if p.ServerID, err = codec.ReadString(reader); err != nil {
 		return err
 	}
-	if c.PublicKey, err = codec.ReadByteArray(reader); err != nil {
+	if p.PublicKey, err = codec.ReadByteArray(reader); err != nil {
 		return err
 	}
-	if c.VerifyToken, err = codec.ReadByteArray(reader); err != nil {
+	if p.VerifyToken, err = codec.ReadByteArray(reader); err != nil {
 		return err
 	}
 	return nil
@@ -105,26 +105,26 @@ type ServerEncryptionResponse struct {
 
 var _ proto.Packet = (*ServerEncryptionResponse)(nil)
 
-func (s *ServerEncryptionResponse) ID() int32 {
+func (p *ServerEncryptionResponse) ID() int32 {
 	return 0x01
 }
 
-func (s *ServerEncryptionResponse) Encode(writer io.Writer) error {
-	if err := codec.WriteByteArray(writer, s.SharedSecret); err != nil {
+func (p *ServerEncryptionResponse) Encode(writer io.Writer) error {
+	if err := codec.WriteByteArray(writer, p.SharedSecret); err != nil {
 		return err
 	}
-	if err := codec.WriteByteArray(writer, s.VerifyToken); err != nil {
+	if err := codec.WriteByteArray(writer, p.VerifyToken); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *ServerEncryptionResponse) Decode(reader io.Reader) error {
+func (p *ServerEncryptionResponse) Decode(reader io.Reader) error {
 	var err error
-	if s.SharedSecret, err = codec.ReadByteArray(reader); err != nil {
+	if p.SharedSecret, err = codec.ReadByteArray(reader); err != nil {
 		return err
 	}
-	if s.VerifyToken, err = codec.ReadByteArray(reader); err != nil {
+	if p.VerifyToken, err = codec.ReadByteArray(reader); err != nil {
 		return err
 	}
 	return nil
