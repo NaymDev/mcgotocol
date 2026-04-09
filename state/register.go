@@ -25,7 +25,9 @@ func InitRegistries() {
 
 	// LOGIN
 	Login.ServerBound.Register(&packet.ServerLoginStart{})
+	Login.ServerBound.Register(&packet.ServerEncryptionResponse{})
 
+	Login.ClientBound.Register(&packet.ClientEncryptionRequest{})
 	Login.ClientBound.Register(&packet.ClientLoginSuccess{})
 
 	// PLAY
