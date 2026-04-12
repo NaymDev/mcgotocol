@@ -1,9 +1,10 @@
-package packets
+package packet
 
 import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
+	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/google/uuid"
 )
 
@@ -11,7 +12,7 @@ type ServerKeepAlive struct {
 	KeepAliveID codec.VarInt
 }
 
-var _ Packet = (*ServerKeepAlive)(nil)
+var _ proto.Packet = (*ServerKeepAlive)(nil)
 
 func (p *ServerKeepAlive) ID() int32 {
 	return 0x00
@@ -31,7 +32,7 @@ type ClientKeepAlive struct {
 	KeepAliveID codec.VarInt
 }
 
-var _ Packet = (*ClientKeepAlive)(nil)
+var _ proto.Packet = (*ClientKeepAlive)(nil)
 
 func (p *ClientKeepAlive) ID() int32 {
 	return 0x00
@@ -57,7 +58,7 @@ type ClientJoinGame struct {
 	ReducedDebugInfo bool
 }
 
-var _ Packet = (*ClientJoinGame)(nil)
+var _ proto.Packet = (*ClientJoinGame)(nil)
 
 func (p *ClientJoinGame) ID() int32 {
 	return 0x01
@@ -126,7 +127,7 @@ type ClientChatMessage struct {
 	Position int8
 }
 
-var _ Packet = (*ClientChatMessage)(nil)
+var _ proto.Packet = (*ClientChatMessage)(nil)
 
 func (p *ClientChatMessage) ID() int32 {
 	return 0x02
@@ -159,7 +160,7 @@ type ClientSetSpawnPosition struct {
 	Z int32
 }
 
-var _ Packet = (*ClientSetSpawnPosition)(nil)
+var _ proto.Packet = (*ClientSetSpawnPosition)(nil)
 
 func (p *ClientSetSpawnPosition) ID() int32 {
 	return 0x05
@@ -194,7 +195,7 @@ type ClientPlayerPositionAndLook struct {
 	Flags uint8
 }
 
-var _ Packet = (*ClientPlayerPositionAndLook)(nil)
+var _ proto.Packet = (*ClientPlayerPositionAndLook)(nil)
 
 func (p *ClientPlayerPositionAndLook) ID() int32 {
 	return 0x08
@@ -257,7 +258,7 @@ type ClientSpawnPlayer struct {
 	Metadata    []codec.EntityMetadata
 }
 
-var _ Packet = (*ClientSpawnPlayer)(nil)
+var _ proto.Packet = (*ClientSpawnPlayer)(nil)
 
 func (p *ClientSpawnPlayer) ID() int32 {
 	return 0x0C
@@ -332,7 +333,7 @@ type ClientPlayerAbilities struct {
 	FieldOfViewModifier float32
 }
 
-var _ Packet = (*ClientPlayerAbilities)(nil)
+var _ proto.Packet = (*ClientPlayerAbilities)(nil)
 
 func (p *ClientPlayerAbilities) ID() int32 {
 	return 0x39

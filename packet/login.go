@@ -1,16 +1,17 @@
-package packets
+package packet
 
 import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
+	"github.com/NaymDev/mcgotocol/proto"
 )
 
 type ServerLoginStart struct {
 	Name string
 }
 
-var _ Packet = (*ServerLoginStart)(nil)
+var _ proto.Packet = (*ServerLoginStart)(nil)
 
 func (p *ServerLoginStart) ID() int32 {
 	return 0x00
@@ -31,7 +32,7 @@ type ServerEncryptionResponse struct {
 	VerifyToken  []byte
 }
 
-var _ Packet = (*ServerEncryptionResponse)(nil)
+var _ proto.Packet = (*ServerEncryptionResponse)(nil)
 
 func (p *ServerEncryptionResponse) ID() int32 {
 	return 0x01
@@ -62,7 +63,7 @@ type ClientDisconnect struct {
 	Reason codec.Chat
 }
 
-var _ Packet = (*ClientDisconnect)(nil)
+var _ proto.Packet = (*ClientDisconnect)(nil)
 
 func (p *ClientDisconnect) ID() int32 {
 	return 0x00
@@ -84,7 +85,7 @@ type ClientEncryptionRequest struct {
 	VerifyToken []byte
 }
 
-var _ Packet = (*ClientEncryptionRequest)(nil)
+var _ proto.Packet = (*ClientEncryptionRequest)(nil)
 
 func (p *ClientEncryptionRequest) ID() int32 {
 	return 0x01
@@ -122,7 +123,7 @@ type ClientLoginSuccess struct {
 	Username string
 }
 
-var _ Packet = (*ClientLoginSuccess)(nil)
+var _ proto.Packet = (*ClientLoginSuccess)(nil)
 
 func (p *ClientLoginSuccess) ID() int32 {
 	return 0x02
@@ -153,7 +154,7 @@ type ClientSetCompression struct {
 	Threshold codec.VarInt
 }
 
-var _ Packet = (*ClientSetCompression)(nil)
+var _ proto.Packet = (*ClientSetCompression)(nil)
 
 func (p *ClientSetCompression) ID() int32 {
 	return 0x03

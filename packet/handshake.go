@@ -1,9 +1,10 @@
-package packets
+package packet
 
 import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
+	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state/states"
 )
 
@@ -21,7 +22,7 @@ type ServerHandshake struct {
 	NextState       codec.VarInt
 }
 
-var _ Packet = (*ServerHandshake)(nil)
+var _ proto.Packet = (*ServerHandshake)(nil)
 
 func (p *ServerHandshake) ID() int32 {
 	return 0x00

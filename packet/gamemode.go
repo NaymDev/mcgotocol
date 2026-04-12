@@ -1,4 +1,4 @@
-package packets
+package packet
 
 const (
 	GamemodeSurvival     uint8 = 0

@@ -3,11 +3,10 @@ package mcgotocol
 import (
 	"bytes"
 	"compress/zlib"
-	"io"
-
 	"github.com/NaymDev/mcgotocol/codec"
-	"github.com/NaymDev/mcgotocol/packets"
+	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state"
+	"io"
 )
 
 type Connection struct {
@@ -36,7 +35,7 @@ func (c *Connection) SetCompressionThreshold(threshold int) {
 	c.compressionThreshold = threshold
 }
 
-func (c *Connection) ReadPacket() (packets.Packet, error) {
+func (c *Connection) ReadPacket() (proto.Packet, error) {
 	length, err := codec.ReadVarInt(c.reader)
 	if err != nil {
 		return nil, err
@@ -81,7 +80,7 @@ func (c *Connection) ReadPacket() (packets.Packet, error) {
 	return c.packetRegistry.Decode(int32(packetID), dataReader)
 }
 
-func (c *Connection) WritePacket(p packets.Packet) error {
+func (c *Connection) WritePacket(p proto.Packet) error {
 	var buf bytes.Buffer
 
 	if err := codec.WriteVarInt(&buf, codec.VarInt(p.ID())); err != nil {

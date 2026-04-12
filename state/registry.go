@@ -4,7 +4,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/NaymDev/mcgotocol/packets"
+	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state/states"
 )
 
@@ -32,9 +32,9 @@ type PacketRegistry struct {
 	State string
 	ctors [MaxPacketID]Constructor
 }
-type Constructor func() packets.Packet
+type Constructor func() proto.Packet
 
-func (r *PacketRegistry) Register(packet packets.Packet) {
+func (r *PacketRegistry) Register(packet proto.Packet) {
 	id := packet.ID()
 	t := reflect.TypeOf(packet)
 
@@ -42,13 +42,13 @@ func (r *PacketRegistry) Register(packet packets.Packet) {
 		t = t.Elem()
 	}
 
-	r.ctors[id] = func() packets.Packet {
+	r.ctors[id] = func() proto.Packet {
 		v := reflect.New(t)
-		return v.Interface().(packets.Packet)
+		return v.Interface().(proto.Packet)
 	}
 }
 
-func (r *PacketRegistry) Decode(id int32, reader io.Reader) (packets.Packet, error) {
+func (r *PacketRegistry) Decode(id int32, reader io.Reader) (proto.Packet, error) {
 	if id < 0 || int(id) >= MaxPacketID {
 		data, _ := io.ReadAll(reader)
 		return nil, &UnknownPacketID{

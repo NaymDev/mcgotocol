@@ -1,10 +1,11 @@
-package packets
+package packet
 
 import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/profile"
+	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/google/uuid"
 )
 
@@ -71,7 +72,7 @@ type ClientPlayerListItem struct {
 	Players []PlayerProfile
 }
 
-var _ Packet = (*ClientPlayerListItem)(nil)
+var _ proto.Packet = (*ClientPlayerListItem)(nil)
 
 func (p *ClientPlayerListItem) ID() int32 {
 	return 0x38

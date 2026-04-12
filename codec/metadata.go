@@ -28,10 +28,10 @@ func ReadMetadata(r io.Reader) ([]EntityMetadata, error) {
 	var result []EntityMetadata
 	for {
 		item := make([]uint8, 1)
-		if _, err := io.ReadFull(r, item); err != nil {
+		if _, err := r.Read(item); err != nil {
 			return nil, err
 		}
-		if item[0] == 0xFF {
+		if item[0] == 0x7F {
 			break
 		}
 		metaIndex := item[0] & 0x1F
@@ -187,6 +187,6 @@ func WriteMetadata(w io.Writer, metadata []EntityMetadata) error {
 		}
 	}
 
-	_, err := w.Write([]byte{0xFF})
+	_, err := w.Write([]byte{0x7F})
 	return err
 }

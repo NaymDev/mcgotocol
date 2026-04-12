@@ -5,10 +5,10 @@ import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
-	"github.com/NaymDev/mcgotocol/packets"
+	"github.com/NaymDev/mcgotocol/proto"
 )
 
-func WritePacket(w io.Writer, p packets.Packet) error {
+func WritePacket(w io.Writer, p proto.Packet) error {
 	var buf bytes.Buffer
 
 	if err := codec.WriteVarInt(&buf, codec.VarInt(p.ID())); err != nil {
