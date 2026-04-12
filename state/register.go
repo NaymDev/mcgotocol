@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/NaymDev/mcgotocol/packet"
+	"github.com/NaymDev/mcgotocol/packets"
 	"github.com/NaymDev/mcgotocol/state/states"
 )
 
@@ -14,33 +14,33 @@ var (
 
 func InitRegistries() {
 	// HANDSHAKE
-	Handshake.ServerBound.Register(&packet.ServerHandshake{})
+	Handshake.ServerBound.Register(&packets.ServerHandshake{})
 
 	// STATUS
-	Status.ServerBound.Register(&packet.ServerStatusRequest{})
-	Status.ServerBound.Register(&packet.ServerStatusPing{})
+	Status.ServerBound.Register(&packets.ServerStatusRequest{})
+	Status.ServerBound.Register(&packets.ServerStatusPing{})
 
-	Status.ClientBound.Register(&packet.ClientStatusResponse{})
-	Status.ClientBound.Register(&packet.ClientStatusPong{})
+	Status.ClientBound.Register(&packets.ClientStatusResponse{})
+	Status.ClientBound.Register(&packets.ClientStatusPong{})
 
 	// LOGIN
-	Login.ServerBound.Register(&packet.ServerLoginStart{})
-	Login.ServerBound.Register(&packet.ServerEncryptionResponse{})
+	Login.ServerBound.Register(&packets.ServerLoginStart{})
+	Login.ServerBound.Register(&packets.ServerEncryptionResponse{})
 
-	Login.ClientBound.Register(&packet.ClientDisconnect{})
-	Login.ClientBound.Register(&packet.ClientEncryptionRequest{})
-	Login.ClientBound.Register(&packet.ClientLoginSuccess{})
-	Login.ClientBound.Register(&packet.ClientSetCompression{})
+	Login.ClientBound.Register(&packets.ClientDisconnect{})
+	Login.ClientBound.Register(&packets.ClientEncryptionRequest{})
+	Login.ClientBound.Register(&packets.ClientLoginSuccess{})
+	Login.ClientBound.Register(&packets.ClientSetCompression{})
 
 	// PLAY
-	Play.ServerBound.Register(&packet.ServerKeepAlive{})
+	Play.ServerBound.Register(&packets.ServerKeepAlive{})
 
-	Play.ClientBound.Register(&packet.ClientKeepAlive{})
-	Play.ClientBound.Register(&packet.ClientJoinGame{})
-	Play.ClientBound.Register(&packet.ClientChatMessage{})
-	Play.ClientBound.Register(&packet.ClientSetSpawnPosition{})
-	Play.ClientBound.Register(&packet.ClientPlayerPositionAndLook{})
-	Play.ClientBound.Register(&packet.ClientPlayerListItem{})
-	Play.ClientBound.Register(&packet.ClientSpawnPlayer{})
-	Play.ClientBound.Register(&packet.ClientPlayerAbilities{})
+	Play.ClientBound.Register(&packets.ClientKeepAlive{})
+	Play.ClientBound.Register(&packets.ClientJoinGame{})
+	Play.ClientBound.Register(&packets.ClientChatMessage{})
+	Play.ClientBound.Register(&packets.ClientSetSpawnPosition{})
+	Play.ClientBound.Register(&packets.ClientPlayerPositionAndLook{})
+	Play.ClientBound.Register(&packets.ClientPlayerListItem{})
+	Play.ClientBound.Register(&packets.ClientSpawnPlayer{})
+	Play.ClientBound.Register(&packets.ClientPlayerAbilities{})
 }

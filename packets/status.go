@@ -1,15 +1,14 @@
-package packet
+package packets
 
 import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
-	"github.com/NaymDev/mcgotocol/proto"
 )
 
 type ServerStatusRequest struct{}
 
-var _ proto.Packet = (*ServerStatusRequest)(nil)
+var _ Packet = (*ServerStatusRequest)(nil)
 
 func (p *ServerStatusRequest) ID() int32 {
 	return 0x00
@@ -27,7 +26,7 @@ type ServerStatusPing struct {
 	Payload int64
 }
 
-var _ proto.Packet = (*ServerStatusPing)(nil)
+var _ Packet = (*ServerStatusPing)(nil)
 
 func (p *ServerStatusPing) ID() int32 {
 	return 0x01
@@ -47,7 +46,7 @@ type ClientStatusResponse struct {
 	JSONResponse string
 }
 
-var _ proto.Packet = (*ClientStatusResponse)(nil)
+var _ Packet = (*ClientStatusResponse)(nil)
 
 func (p ClientStatusResponse) ID() int32 {
 	return 0x00
@@ -67,7 +66,7 @@ type ClientStatusPong struct {
 	Payload int64
 }
 
-var _ proto.Packet = (*ClientStatusPong)(nil)
+var _ Packet = (*ClientStatusPong)(nil)
 
 func (p *ClientStatusPong) ID() int32 {
 	return 0x01

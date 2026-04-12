@@ -5,11 +5,11 @@ import (
 	"io"
 
 	"github.com/NaymDev/mcgotocol/codec"
-	"github.com/NaymDev/mcgotocol/proto"
+	"github.com/NaymDev/mcgotocol/packets"
 	"github.com/NaymDev/mcgotocol/state"
 )
 
-func ReadPacket(r io.Reader, registry *state.PacketRegistry) (proto.Packet, error) {
+func ReadPacket(r io.Reader, registry *state.PacketRegistry) (packets.Packet, error) {
 	length, err := codec.ReadVarInt(r)
 	if err != nil {
 		return nil, err
