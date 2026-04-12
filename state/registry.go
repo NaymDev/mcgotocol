@@ -1,10 +1,11 @@
 package state
 
 import (
-	"github.com/NaymDev/mcgotocol/proto"
-	"github.com/NaymDev/mcgotocol/state/states"
 	"io"
 	"reflect"
+
+	"github.com/NaymDev/mcgotocol/proto"
+	"github.com/NaymDev/mcgotocol/state/states"
 )
 
 const MaxPacketID = 0x49
@@ -49,16 +50,20 @@ func (r *PacketRegistry) Register(packet proto.Packet) {
 
 func (r *PacketRegistry) Decode(id int32, reader io.Reader) (proto.Packet, error) {
 	if id < 0 || int(id) >= MaxPacketID {
+		data, _ := io.ReadAll(reader)
 		return nil, &UnknownPacketID{
 			PacketID: id,
 			State:    r.State,
+			Data:     data,
 		}
 	}
 	ctor := r.ctors[id]
 	if ctor == nil {
+		data, _ := io.ReadAll(reader)
 		return nil, &UnknownPacketID{
 			PacketID: id,
 			State:    r.State,
+			Data:     data,
 		}
 	}
 
