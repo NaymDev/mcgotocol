@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-type MetadataType byte
+type MetadataType uint8
 
 const (
 	MetaByte MetadataType = iota
@@ -18,7 +18,7 @@ const (
 )
 
 type EntityMetadata struct {
-	Index byte
+	Index uint8
 	Type  MetadataType
 	Value interface{}
 }
@@ -26,20 +26,19 @@ type EntityMetadata struct {
 func ReadMetadata(r io.Reader) ([]EntityMetadata, error) {
 	var result []EntityMetadata
 	for {
-		indexByte := make([]byte, 1)
-		if _, err := r.Read(indexByte); err != nil {
+		item := make([]uint8, 1)
+		if _, err := r.Read(item); err != nil {
 			return nil, err
 		}
-		if indexByte[0] == 0xFF {
+		if item[0] == 0x7F {
 			break
 		}
-		metaTypeByte := make([]byte, 1)
-		if _, err := r.Read(metaTypeByte); err != nil {
-			return nil, err
-		}
+		metaIndex := item[0] & 0x1F
+		metaType := item[0] >> 5
+
 		entry := EntityMetadata{
-			Index: indexByte[0],
-			Type:  MetadataType(metaTypeByte[0]),
+			Index: metaIndex,
+			Type:  MetadataType(metaType),
 		}
 
 		var err error
@@ -83,10 +82,8 @@ func ReadMetadata(r io.Reader) ([]EntityMetadata, error) {
 
 func WriteMetadata(w io.Writer, metadata []EntityMetadata) error {
 	for _, entry := range metadata {
-		if _, err := w.Write([]byte{entry.Index}); err != nil {
-			return err
-		}
-		if _, err := w.Write([]byte{byte(entry.Type)}); err != nil {
+		item := uint8(entry.Type<<5) | (entry.Index & 0x1F)
+		if _, err := w.Write([]byte{item}); err != nil {
 			return err
 		}
 
