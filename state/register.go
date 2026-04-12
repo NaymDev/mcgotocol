@@ -37,6 +37,7 @@ func InitRegistries() {
 
 	Play.ClientBound.Register(&packet.ClientKeepAlive{})
 	Play.ClientBound.Register(&packet.ClientJoinGame{})
+	Play.ClientBound.Register(&packet.ClientChatMessage{})
 	Play.ClientBound.Register(&packet.ClientSetSpawnPosition{})
 	Play.ClientBound.Register(&packet.ClientPlayerPositionAndLook{})
 	Play.ClientBound.Register(&packet.ClientPlayerListItem{})
