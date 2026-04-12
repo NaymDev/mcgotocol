@@ -9,11 +9,12 @@ type MetadataType uint8
 
 const (
 	MetaByte MetadataType = iota
-	MetaVarInt
+	MetaShort
+	MetaInt
 	MetaFloat
 	MetaString
 	MetaSlot
-	MetaBool
+	MetaVector3I
 	MetaVector3F
 )
 
@@ -45,16 +46,30 @@ func ReadMetadata(r io.Reader) ([]EntityMetadata, error) {
 		switch entry.Type {
 		case MetaByte:
 			entry.Value, err = ReadByte(r)
-		case MetaVarInt:
-			entry.Value, err = ReadVarInt(r)
+		case MetaShort:
+			entry.Value, err = ReadShort(r)
+		case MetaInt:
+			entry.Value, err = ReadInt(r)
 		case MetaFloat:
 			entry.Value, err = ReadFloat(r)
 		case MetaString:
 			entry.Value, err = ReadString(r)
 		case MetaSlot:
 			entry.Value, err = ReadSlot(r)
-		case MetaBool:
-			entry.Value, err = ReadBool(r)
+		case MetaVector3I:
+			x, err := ReadInt(r)
+			if err != nil {
+				return nil, err
+			}
+			y, err := ReadInt(r)
+			if err != nil {
+				return nil, err
+			}
+			z, err := ReadInt(r)
+			if err != nil {
+				return nil, err
+			}
+			entry.Value = [3]int32{x, y, z}
 		case MetaVector3F:
 			x, err := ReadFloat(r)
 			if err != nil {
@@ -82,86 +97,96 @@ func ReadMetadata(r io.Reader) ([]EntityMetadata, error) {
 
 func WriteMetadata(w io.Writer, metadata []EntityMetadata) error {
 	for _, entry := range metadata {
-		item := uint8(entry.Type<<5) | (entry.Index & 0x1F)
-		if _, err := w.Write([]byte{item}); err != nil {
+		header := (uint8(entry.Index) & 0x1F) | (uint8(entry.Type) << 5)
+
+		if _, err := w.Write([]byte{header}); err != nil {
 			return err
 		}
 
+		var err error
+
 		switch entry.Type {
 		case MetaByte:
-			if v, ok := entry.Value.(int8); ok {
-				if err := WriteByte(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaByte")
+			v, ok := entry.Value.(int8)
+			if !ok {
+				return fmt.Errorf("invalid MetaByte value type")
 			}
+			err = WriteByte(w, v)
 
-		case MetaVarInt:
-			if v, ok := entry.Value.(VarInt); ok {
-				if err := WriteVarInt(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaVarInt")
+		case MetaShort:
+			v, ok := entry.Value.(int16)
+			if !ok {
+				return fmt.Errorf("invalid MetaShort value type")
 			}
+			err = WriteShort(w, v)
+
+		case MetaInt:
+			v, ok := entry.Value.(int32)
+			if !ok {
+				return fmt.Errorf("invalid MetaInt value type")
+			}
+			err = WriteInt(w, v)
 
 		case MetaFloat:
-			if v, ok := entry.Value.(float32); ok {
-				if err := WriteFloat(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaFloat")
+			v, ok := entry.Value.(float32)
+			if !ok {
+				return fmt.Errorf("invalid MetaFloat value type")
 			}
+			err = WriteFloat(w, v)
 
 		case MetaString:
-			if v, ok := entry.Value.(string); ok {
-				if err := WriteString(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaString")
+			v, ok := entry.Value.(string)
+			if !ok {
+				return fmt.Errorf("invalid MetaString value type")
 			}
+			err = WriteString(w, v)
 
 		case MetaSlot:
-			if v, ok := entry.Value.(ItemSlot); ok {
-				if err := WriteSlot(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaSlot")
+			v, ok := entry.Value.(ItemSlot)
+			if !ok {
+				return fmt.Errorf("invalid MetaSlot value type")
 			}
+			err = WriteSlot(w, v)
 
-		case MetaBool:
-			if v, ok := entry.Value.(bool); ok {
-				if err := WriteBool(w, v); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaBool")
+		case MetaVector3I:
+			v, ok := entry.Value.([3]int32)
+			if !ok {
+				return fmt.Errorf("invalid MetaVector3I value type")
+			}
+			if err = WriteInt(w, v[0]); err != nil {
+				return err
+			}
+			if err = WriteInt(w, v[1]); err != nil {
+				return err
+			}
+			if err = WriteInt(w, v[2]); err != nil {
+				return err
 			}
 
 		case MetaVector3F:
-			if v, ok := entry.Value.([3]float32); ok {
-				if err := WriteFloat(w, v[0]); err != nil {
-					return err
-				}
-				if err := WriteFloat(w, v[1]); err != nil {
-					return err
-				}
-				if err := WriteFloat(w, v[2]); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("invalid value type for MetaVector3F")
+			v, ok := entry.Value.([3]float32)
+			if !ok {
+				return fmt.Errorf("invalid MetaVector3F value type")
+			}
+			if err = WriteFloat(w, v[0]); err != nil {
+				return err
+			}
+			if err = WriteFloat(w, v[1]); err != nil {
+				return err
+			}
+			if err = WriteFloat(w, v[2]); err != nil {
+				return err
 			}
 
 		default:
 			return fmt.Errorf("unknown metadata type %d", entry.Type)
 		}
+
+		if err != nil {
+			return err
+		}
 	}
 
-	_, err := w.Write([]byte{0xFF})
+	_, err := w.Write([]byte{0x7F})
 	return err
 }
