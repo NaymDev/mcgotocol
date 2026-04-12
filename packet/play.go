@@ -122,6 +122,38 @@ func (p *ClientJoinGame) Decode(reader io.Reader) error {
 	return nil
 }
 
+type ClientChatMessage struct {
+	JSONData codec.Chat
+	Position int8
+}
+
+var _ proto.Packet = (*ClientChatMessage)(nil)
+
+func (p *ClientChatMessage) ID() int32 {
+	return 0x03
+}
+
+func (p *ClientChatMessage) Encode(writer io.Writer) error {
+	if err := codec.WriteChat(writer, p.JSONData); err != nil {
+		return err
+	}
+	if err := codec.WriteByte(writer, p.Position); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ClientChatMessage) Decode(reader io.Reader) error {
+	var err error
+	if p.JSONData, err = codec.ReadChat(reader); err != nil {
+		return err
+	}
+	if p.Position, err = codec.ReadByte(reader); err != nil {
+		return err
+	}
+	return nil
+}
+
 type ClientSetSpawnPosition struct {
 	X int32
 	Y int32
