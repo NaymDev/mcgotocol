@@ -130,7 +130,7 @@ type ClientChatMessage struct {
 var _ proto.Packet = (*ClientChatMessage)(nil)
 
 func (p *ClientChatMessage) ID() int32 {
-	return 0x03
+	return 0x02
 }
 
 func (p *ClientChatMessage) Encode(writer io.Writer) error {
