@@ -12,11 +12,11 @@ import (
 type PlayerListAction int32
 
 const (
-	AddPlayer PlayerListAction = iota
-	UpdateGamemode
-	UpdateLatency
-	UpdateDisplayName
-	RemovePlayer
+	PlayerListItemActionAddPlayer PlayerListAction = iota
+	PlayerListItemActionUpdateGamemode
+	PlayerListItemActionUpdateLatency
+	PlayerListItemActionUpdateDisplayName
+	PlayerListItemActionRemovePlayer
 )
 
 type Property struct {
@@ -57,19 +57,18 @@ func (p *Property) Encode(w io.Writer) error {
 	return nil
 }
 
-type PlayerProfile struct {
-	UUID           uuid.UUID
-	Name           string
-	Properties     []Property
-	Gamemode       codec.VarInt
-	Ping           codec.VarInt
-	HasDisplayName bool
-	DisplayName    *codec.Chat
+type PlayerListItemEntry struct {
+	UUID        uuid.UUID
+	Name        *string
+	Properties  []Property
+	Gamemode    *codec.VarInt
+	Ping        *codec.VarInt
+	DisplayName *codec.Chat
 }
 
 type ClientPlayerListItem struct {
 	Action  PlayerListAction
-	Players []PlayerProfile
+	Players []PlayerListItemEntry
 }
 
 var _ proto.Packet = (*ClientPlayerListItem)(nil)
@@ -90,8 +89,8 @@ func (p *ClientPlayerListItem) Encode(writer io.Writer) error {
 			return err
 		}
 		switch p.Action {
-		case AddPlayer:
-			if err := codec.WriteString(writer, player.Name); err != nil {
+		case PlayerListItemActionAddPlayer:
+			if err := codec.WriteString(writer, *player.Name); err != nil {
 				return err
 			}
 			if err := codec.WriteVarInt(writer, codec.VarInt(len(player.Properties))); err != nil {
@@ -102,38 +101,38 @@ func (p *ClientPlayerListItem) Encode(writer io.Writer) error {
 					return err
 				}
 			}
-			if err := codec.WriteVarInt(writer, player.Gamemode); err != nil {
+			if err := codec.WriteVarInt(writer, *player.Gamemode); err != nil {
 				return err
 			}
-			if err := codec.WriteVarInt(writer, player.Ping); err != nil {
+			if err := codec.WriteVarInt(writer, *player.Ping); err != nil {
 				return err
 			}
-			if err := codec.WriteBool(writer, player.HasDisplayName); err != nil {
+			if err := codec.WriteBool(writer, player.DisplayName != nil); err != nil {
 				return err
 			}
-			if player.HasDisplayName {
+			if player.DisplayName != nil {
 				if err := codec.WriteChat(writer, *player.DisplayName); err != nil {
 					return err
 				}
 			}
-		case UpdateGamemode:
-			if err := codec.WriteVarInt(writer, player.Gamemode); err != nil {
+		case PlayerListItemActionUpdateGamemode:
+			if err := codec.WriteVarInt(writer, *player.Gamemode); err != nil {
 				return err
 			}
-		case UpdateLatency:
-			if err := codec.WriteVarInt(writer, player.Ping); err != nil {
+		case PlayerListItemActionUpdateLatency:
+			if err := codec.WriteVarInt(writer, *player.Ping); err != nil {
 				return err
 			}
-		case UpdateDisplayName:
-			if err := codec.WriteBool(writer, player.HasDisplayName); err != nil {
+		case PlayerListItemActionUpdateDisplayName:
+			if err := codec.WriteBool(writer, player.DisplayName != nil); err != nil {
 				return err
 			}
-			if player.HasDisplayName {
+			if player.DisplayName != nil {
 				if err := codec.WriteChat(writer, *player.DisplayName); err != nil {
 					return err
 				}
 			}
-		case RemovePlayer:
+		case PlayerListItemActionRemovePlayer:
 		}
 	}
 	return nil
@@ -151,10 +150,10 @@ func (p *ClientPlayerListItem) Decode(reader io.Reader) error {
 		return err
 	}
 
-	p.Players = make([]PlayerProfile, playerCount)
+	p.Players = make([]PlayerListItemEntry, playerCount)
 
 	for i := 0; i < int(playerCount); i++ {
-		player := PlayerProfile{}
+		player := PlayerListItemEntry{}
 
 		u, err := codec.ReadUUID(reader)
 		if err != nil {
@@ -163,12 +162,12 @@ func (p *ClientPlayerListItem) Decode(reader io.Reader) error {
 		player.UUID = u
 
 		switch p.Action {
-		case AddPlayer:
+		case PlayerListItemActionAddPlayer:
 			name, err := codec.ReadString(reader)
 			if err != nil {
 				return err
 			}
-			player.Name = name
+			player.Name = &name
 
 			propCount, err := codec.ReadVarInt(reader)
 			if err != nil {
@@ -198,21 +197,23 @@ func (p *ClientPlayerListItem) Decode(reader io.Reader) error {
 				player.Properties[j] = prop
 			}
 
-			player.Gamemode, err = codec.ReadVarInt(reader)
+			gamemode, err := codec.ReadVarInt(reader)
 			if err != nil {
 				return err
 			}
+			player.Gamemode = &gamemode
 
-			player.Ping, err = codec.ReadVarInt(reader)
+			ping, err := codec.ReadVarInt(reader)
 			if err != nil {
 				return err
 			}
+			player.Ping = &ping
 
-			player.HasDisplayName, err = codec.ReadBool(reader)
+			hasDisplayName, err := codec.ReadBool(reader)
 			if err != nil {
 				return err
 			}
-			if player.HasDisplayName {
+			if hasDisplayName {
 				displayName, err := codec.ReadChat(reader)
 				if err != nil {
 					return err
@@ -220,29 +221,31 @@ func (p *ClientPlayerListItem) Decode(reader io.Reader) error {
 				player.DisplayName = &displayName
 			}
 
-		case UpdateGamemode:
-			player.Gamemode, err = codec.ReadVarInt(reader)
+		case PlayerListItemActionUpdateGamemode:
+			gamemode, err := codec.ReadVarInt(reader)
 			if err != nil {
 				return err
 			}
-		case UpdateLatency:
-			player.Ping, err = codec.ReadVarInt(reader)
+			player.Gamemode = &gamemode
+		case PlayerListItemActionUpdateLatency:
+			ping, err := codec.ReadVarInt(reader)
 			if err != nil {
 				return err
 			}
-		case UpdateDisplayName:
-			player.HasDisplayName, err = codec.ReadBool(reader)
+			player.Ping = &ping
+		case PlayerListItemActionUpdateDisplayName:
+			hasDisplayName, err := codec.ReadBool(reader)
 			if err != nil {
 				return err
 			}
-			if player.HasDisplayName {
+			if hasDisplayName {
 				displayName, err := codec.ReadChat(reader)
 				if err != nil {
 					return err
 				}
 				player.DisplayName = &displayName
 			}
-		case RemovePlayer:
+		case PlayerListItemActionRemovePlayer:
 		}
 
 		p.Players[i] = player
