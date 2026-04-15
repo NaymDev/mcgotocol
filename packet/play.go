@@ -365,3 +365,35 @@ func (p *ClientPlayerAbilities) Decode(reader io.Reader) error {
 	}
 	return nil
 }
+
+type ClientPlayerListIemAndFooter struct {
+	Header codec.Chat
+	Footer codec.Chat
+}
+
+var _ proto.Packet = (*ClientPlayerListIemAndFooter)(nil)
+
+func (p *ClientPlayerListIemAndFooter) ID() int32 {
+	return 0x47
+}
+
+func (p *ClientPlayerListIemAndFooter) Encode(writer io.Writer) error {
+	if err := codec.WriteChat(writer, p.Header); err != nil {
+		return err
+	}
+	if err := codec.WriteChat(writer, p.Footer); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ClientPlayerListIemAndFooter) Decode(reader io.Reader) error {
+	var err error
+	if p.Header, err = codec.ReadChat(reader); err != nil {
+		return err
+	}
+	if p.Footer, err = codec.ReadChat(reader); err != nil {
+		return err
+	}
+	return nil
+}
