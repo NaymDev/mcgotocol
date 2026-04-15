@@ -366,18 +366,18 @@ func (p *ClientPlayerAbilities) Decode(reader io.Reader) error {
 	return nil
 }
 
-type ClientPlayerListIemAndFooter struct {
+type ClientPlayerListHeaderAndFooter struct {
 	Header codec.Chat
 	Footer codec.Chat
 }
 
-var _ proto.Packet = (*ClientPlayerListIemAndFooter)(nil)
+var _ proto.Packet = (*ClientPlayerListHeaderAndFooter)(nil)
 
-func (p *ClientPlayerListIemAndFooter) ID() int32 {
+func (p *ClientPlayerListHeaderAndFooter) ID() int32 {
 	return 0x47
 }
 
-func (p *ClientPlayerListIemAndFooter) Encode(writer io.Writer) error {
+func (p *ClientPlayerListHeaderAndFooter) Encode(writer io.Writer) error {
 	if err := codec.WriteChat(writer, p.Header); err != nil {
 		return err
 	}
@@ -387,7 +387,7 @@ func (p *ClientPlayerListIemAndFooter) Encode(writer io.Writer) error {
 	return nil
 }
 
-func (p *ClientPlayerListIemAndFooter) Decode(reader io.Reader) error {
+func (p *ClientPlayerListHeaderAndFooter) Decode(reader io.Reader) error {
 	var err error
 	if p.Header, err = codec.ReadChat(reader); err != nil {
 		return err

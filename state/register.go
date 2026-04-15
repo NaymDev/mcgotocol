@@ -43,5 +43,5 @@ func InitRegistries() {
 	Play.ClientBound.Register(&packet.ClientPlayerListItem{})
 	Play.ClientBound.Register(&packet.ClientSpawnPlayer{})
 	Play.ClientBound.Register(&packet.ClientPlayerAbilities{})
-	Play.ClientBound.Register(&packet.ClientPlayerListIemAndFooter{})
+	Play.ClientBound.Register(&packet.ClientPlayerListHeaderAndFooter{})
 }
