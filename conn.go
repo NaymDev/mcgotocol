@@ -3,10 +3,11 @@ package mcgotocol
 import (
 	"bytes"
 	"compress/zlib"
+	"io"
+
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/NaymDev/mcgotocol/state"
-	"io"
 )
 
 type Connection struct {
@@ -29,6 +30,10 @@ func NewConnection(reader io.Reader, writer io.Writer, packetRegistry *state.Pac
 
 func (c *Connection) SetPacketRegistry(packetRegistry *state.PacketRegistry) {
 	c.packetRegistry = packetRegistry
+}
+
+func (c *Connection) PacketRegistry() *state.PacketRegistry {
+	return c.packetRegistry
 }
 
 func (c *Connection) SetCompressionThreshold(threshold int) {
