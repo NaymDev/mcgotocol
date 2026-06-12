@@ -3,9 +3,10 @@ package codec
 import (
 	"encoding/binary"
 	"errors"
-	"github.com/google/uuid"
 	"io"
 	"math"
+
+	"github.com/google/uuid"
 )
 
 // ============================
@@ -76,22 +77,21 @@ func ReadVarLong(r io.Reader) (VarLong, error) {
 	return num, nil
 }
 
-// WriteVarLong TODO: prevent infinit loof when negative
 func WriteVarLong(w io.Writer, value VarLong) error {
-	for {
-		b := byte(value & 0x7F)
-		value >>= 7
-		if value != 0 {
-			b |= 0x80
-		}
-		if _, err := w.Write([]byte{b}); err != nil {
+	u := uint64(value)
+	b := [1]byte{0}
+
+	for u >= 0x80 {
+		b[0] = byte(u&0x7F) | 0x80
+		if _, err := w.Write(b[:]); err != nil {
 			return err
 		}
-		if value == 0 {
-			break
-		}
+		u >>= 7
 	}
-	return nil
+
+	b[0] = byte(u)
+	_, err := w.Write(b[:])
+	return err
 }
 
 // ============================
