@@ -1,4 +1,4 @@
-package codec
+package codec_test
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/NaymDev/mcgotocol/codec"
 	mcio "github.com/NaymDev/mcgotocol/io"
 	"github.com/NaymDev/mcgotocol/packet"
 	"github.com/NaymDev/mcgotocol/profile"
@@ -16,7 +17,7 @@ import (
 func BenchmarkVarIntWrite(b *testing.B) {
 	cases := []struct {
 		name  string
-		value VarInt
+		value codec.VarInt
 	}{
 		{"varint(1)", 1},
 		{"varint(1_000)", 1_000},
@@ -25,13 +26,13 @@ func BenchmarkVarIntWrite(b *testing.B) {
 		{"varint(minint)", math.MinInt32},
 	}
 
-	benchEncoder(b, WriteVarInt, cases)
+	benchEncoder(b, codec.WriteVarInt, cases)
 }
 
 func BenchmarkVarLongWrite(b *testing.B) {
 	cases := []struct {
 		name  string
-		value VarLong
+		value codec.VarLong
 	}{
 		{"varlong(1)", 1},
 		{"varlong(1_000)", 1_000},
@@ -40,7 +41,7 @@ func BenchmarkVarLongWrite(b *testing.B) {
 		{"varlong(maxint)", math.MaxInt64},
 		{"varlong(minint)", math.MinInt64},
 	}
-	benchEncoder(b, WriteVarLong, cases)
+	benchEncoder(b, codec.WriteVarLong, cases)
 }
 
 func BenchmarkBoolWrite(b *testing.B) {
@@ -51,7 +52,7 @@ func BenchmarkBoolWrite(b *testing.B) {
 		{"bool(true)", true},
 		{"bool(false)", false},
 	}
-	benchEncoder(b, WriteBool, cases)
+	benchEncoder(b, codec.WriteBool, cases)
 }
 
 func BenchmarkByteWrite(b *testing.B) {
@@ -64,7 +65,7 @@ func BenchmarkByteWrite(b *testing.B) {
 		{"byte(maxbyte)", math.MaxInt8},
 		{"byte(minbyte)", math.MinInt8},
 	}
-	benchEncoder(b, WriteByte, cases)
+	benchEncoder(b, codec.WriteByte, cases)
 }
 
 func BenchmarkUByteWrite(b *testing.B) {
@@ -76,7 +77,7 @@ func BenchmarkUByteWrite(b *testing.B) {
 		{"ubyte(1)", 0x01},
 		{"ubyte(maxbyte)", math.MaxUint8},
 	}
-	benchEncoder(b, WriteUByte, cases)
+	benchEncoder(b, codec.WriteUByte, cases)
 }
 
 func BenchmarkShortWrite(b *testing.B) {
@@ -90,7 +91,7 @@ func BenchmarkShortWrite(b *testing.B) {
 		{"short(maxint)", math.MaxInt16},
 		{"short(minint)", math.MinInt16},
 	}
-	benchEncoder(b, WriteShort, cases)
+	benchEncoder(b, codec.WriteShort, cases)
 }
 
 func BenchmarkUShortWrite(b *testing.B) {
@@ -103,7 +104,7 @@ func BenchmarkUShortWrite(b *testing.B) {
 		{"ushort(10_000)", 10_000},
 		{"ushort(maxint)", math.MaxInt16},
 	}
-	benchEncoder(b, WriteUShort, cases)
+	benchEncoder(b, codec.WriteUShort, cases)
 }
 
 func BenchmarkIntWrite(b *testing.B) {
@@ -118,7 +119,7 @@ func BenchmarkIntWrite(b *testing.B) {
 		{"int(maxint)", math.MaxInt32},
 		{"int(minint)", math.MinInt32},
 	}
-	benchEncoder(b, WriteInt, cases)
+	benchEncoder(b, codec.WriteInt, cases)
 }
 
 func BenchmarkLongWrite(b *testing.B) {
@@ -133,7 +134,7 @@ func BenchmarkLongWrite(b *testing.B) {
 		{"int(maxint)", math.MaxInt64},
 		{"int(minint)", math.MinInt64},
 	}
-	benchEncoder(b, WriteLong, cases)
+	benchEncoder(b, codec.WriteLong, cases)
 }
 
 func BenchmarkFloatWrite(b *testing.B) {
@@ -154,7 +155,7 @@ func BenchmarkFloatWrite(b *testing.B) {
 		{"float(nan)", float32(math.NaN())},
 	}
 
-	benchEncoder(b, WriteFloat, cases)
+	benchEncoder(b, codec.WriteFloat, cases)
 }
 
 func BenchmarkDoubleWrite(b *testing.B) {
@@ -175,7 +176,7 @@ func BenchmarkDoubleWrite(b *testing.B) {
 		{"double(nan)", math.NaN()},
 	}
 
-	benchEncoder(b, WriteDouble, cases)
+	benchEncoder(b, codec.WriteDouble, cases)
 }
 
 func BenchmarkPacketsWrite(b *testing.B) {
@@ -341,8 +342,8 @@ func BenchmarkPacketsWrite(b *testing.B) {
 								Value: "default",
 							}),
 						},
-						Gamemode: func() *VarInt { v := VarInt(packet.GamemodeCreative); return &v }(),
-						Ping:     func() *VarInt { v := VarInt(50); return &v }(),
+						Gamemode: func() *codec.VarInt { v := codec.VarInt(packet.GamemodeCreative); return &v }(),
+						Ping:     func() *codec.VarInt { v := codec.VarInt(50); return &v }(),
 					},
 				},
 			},
@@ -354,7 +355,7 @@ func BenchmarkPacketsWrite(b *testing.B) {
 				Players: []packet.PlayerListItemEntry{
 					{
 						UUID:     uuid.MustParse("123e4567-e89b-12d3-a456-426614174000"),
-						Gamemode: func() *VarInt { v := VarInt(packet.GamemodeSurvival); return &v }(),
+						Gamemode: func() *codec.VarInt { v := codec.VarInt(packet.GamemodeSurvival); return &v }(),
 					},
 				},
 			},
