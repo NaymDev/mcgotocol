@@ -40,6 +40,7 @@ func InitRegistries() {
 	Play.ClientBound.Register(&packet.ClientChatMessage{})
 	Play.ClientBound.Register(&packet.ClientSetSpawnPosition{})
 	Play.ClientBound.Register(&packet.ClientPlayerPositionAndLook{})
+	Play.ClientBound.Register(&packet.ClientSpawnPainting{})
 	Play.ClientBound.Register(&packet.ClientPlayerListItem{})
 	Play.ClientBound.Register(&packet.ClientSpawnPlayer{})
 	Play.ClientBound.Register(&packet.ClientPlayerAbilities{})

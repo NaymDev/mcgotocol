@@ -246,6 +246,61 @@ func (p *ClientPlayerPositionAndLook) Decode(reader io.Reader) error {
 	return nil
 }
 
+type ClientSpawnPainting struct {
+	EntityID  codec.VarInt
+	Title     string
+	X         int32
+	Y         int32
+	Z         int32
+	Direction uint8
+}
+
+var _ proto.Packet = (*ClientSpawnPainting)(nil)
+
+func (p *ClientSpawnPainting) ID() int32 {
+	return 0x10
+}
+
+func (p *ClientSpawnPainting) Encode(writer io.Writer) error {
+	if len(p.Title) > 13 {
+		return codec.ErrStringTooLong
+	}
+
+	if err := codec.WriteVarInt(writer, p.EntityID); err != nil {
+		return err
+	}
+	if err := codec.WriteString(writer, p.Title); err != nil {
+		return err
+	}
+	if err := codec.WritePosition(writer, p.X, p.Y, p.Z); err != nil {
+		return err
+	}
+	if err := codec.WriteUByte(writer, p.Direction); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ClientSpawnPainting) Decode(reader io.Reader) error {
+	var err error
+	if p.EntityID, err = codec.ReadVarInt(reader); err != nil {
+		return err
+	}
+	if p.Title, err = codec.ReadString(reader); err != nil {
+		return err
+	}
+	if len(p.Title) > 13 {
+		return codec.ErrStringTooLong
+	}
+	if p.X, p.Y, p.Z, err = codec.ReadPosition(reader); err != nil {
+		return err
+	}
+	if p.Direction, err = codec.ReadUByte(reader); err != nil {
+		return err
+	}
+	return nil
+}
+
 type ClientSpawnPlayer struct {
 	EntityID    codec.VarInt
 	PlayerUUID  uuid.UUID
