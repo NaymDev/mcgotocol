@@ -38,19 +38,22 @@ func ReadVarInt(r io.Reader) (VarInt, error) {
 
 func WriteVarInt(w io.Writer, value VarInt) error {
 	u := uint32(value)
+	b := [1]byte{0}
+
 	for {
-		b := byte(u & 0x7F)
+		b[0] = byte(u & 0x7F)
 		u >>= 7
 		if u != 0 {
-			b |= 0x80
+			b[0] |= 0x80
 		}
-		if _, err := w.Write([]byte{b}); err != nil {
+		if _, err := w.Write(b[:]); err != nil {
 			return err
 		}
 		if u == 0 {
 			break
 		}
 	}
+
 	return nil
 }
 
