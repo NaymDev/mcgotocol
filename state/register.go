@@ -43,6 +43,7 @@ func InitRegistries() {
 	Play.ClientBound.Register(&packet.ClientSpawnPainting{})
 	Play.ClientBound.Register(&packet.ClientPlayerListItem{})
 	Play.ClientBound.Register(&packet.ClientSpawnPlayer{})
+	Play.ClientBound.Register(&packet.ClientSpawnObject{})
 	Play.ClientBound.Register(&packet.ClientPlayerAbilities{})
 	Play.ClientBound.Register(&packet.ClientPlayerListHeaderAndFooter{})
 }

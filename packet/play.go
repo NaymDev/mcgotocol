@@ -252,7 +252,7 @@ type ClientSpawnPainting struct {
 	X         int32
 	Y         int32
 	Z         int32
-	Direction uint8
+	Direction codec.Direction
 }
 
 var _ proto.Packet = (*ClientSpawnPainting)(nil)
@@ -275,7 +275,7 @@ func (p *ClientSpawnPainting) Encode(writer io.Writer) error {
 	if err := codec.WritePosition(writer, p.X, p.Y, p.Z); err != nil {
 		return err
 	}
-	if err := codec.WriteUByte(writer, p.Direction); err != nil {
+	if err := codec.WriteUByte(writer, uint8(p.Direction)); err != nil {
 		return err
 	}
 	return nil
@@ -295,8 +295,10 @@ func (p *ClientSpawnPainting) Decode(reader io.Reader) error {
 	if p.X, p.Y, p.Z, err = codec.ReadPosition(reader); err != nil {
 		return err
 	}
-	if p.Direction, err = codec.ReadUByte(reader); err != nil {
+	if d, err := codec.ReadUByte(reader); err != nil {
 		return err
+	} else {
+		p.Direction = codec.Direction(d)
 	}
 	return nil
 }
@@ -378,6 +380,111 @@ func (p *ClientSpawnPlayer) Decode(reader io.Reader) error {
 	}
 	if p.Metadata, err = codec.ReadMetadata(reader); err != nil {
 		return err
+	}
+	return nil
+}
+
+type ObjectType int8
+
+// TODO: make enum from https://minecraft.fandom.com/wiki/Java_Edition_data_values/Pre-flattening/Entity_IDs
+
+type ClientSpawnObject struct {
+	EntityID  codec.VarInt
+	Type      ObjectType
+	X         int32
+	Y         int32
+	Z         int32
+	Pitch     codec.Angle
+	Yaw       codec.Angle
+	Data      int32
+	VelocityX int32
+	VelocityY int32
+	VelocityZ int32
+}
+
+var _ proto.Packet = (*ClientSpawnObject)(nil)
+
+func (p *ClientSpawnObject) ID() int32 {
+	return 0x0E
+}
+
+func (p *ClientSpawnObject) Encode(writer io.Writer) error {
+	if err := codec.WriteVarInt(writer, p.EntityID); err != nil {
+		return err
+	}
+	if err := codec.WriteByte(writer, int8(p.Type)); err != nil {
+		return err
+	}
+	if err := codec.WriteInt(writer, p.X); err != nil {
+		return err
+	}
+	if err := codec.WriteInt(writer, p.Y); err != nil {
+		return err
+	}
+	if err := codec.WriteInt(writer, p.Z); err != nil {
+		return err
+	}
+	if err := codec.WriteAngle(writer, p.Pitch); err != nil {
+		return err
+	}
+	if err := codec.WriteAngle(writer, p.Yaw); err != nil {
+		return err
+	}
+	if err := codec.WriteInt(writer, p.Data); err != nil {
+		return err
+	}
+	if p.Data != 0 {
+		if err := codec.WriteInt(writer, p.VelocityX); err != nil {
+			return err
+		}
+		if err := codec.WriteInt(writer, p.VelocityY); err != nil {
+			return err
+		}
+		if err := codec.WriteInt(writer, p.VelocityZ); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p *ClientSpawnObject) Decode(reader io.Reader) error {
+	var err error
+	if p.EntityID, err = codec.ReadVarInt(reader); err != nil {
+		return err
+	}
+	if b, err := codec.ReadByte(reader); err != nil {
+		return err
+	} else {
+		p.Type = ObjectType(b)
+	}
+	if p.X, err = codec.ReadInt(reader); err != nil {
+		return err
+	}
+	if p.Y, err = codec.ReadInt(reader); err != nil {
+		return err
+	}
+	if p.Z, err = codec.ReadInt(reader); err != nil {
+		return err
+	}
+	if p.Pitch, err = codec.ReadAngle(reader); err != nil {
+		return err
+	}
+	if p.Yaw, err = codec.ReadAngle(reader); err != nil {
+		return err
+	}
+	if p.Data, err = codec.ReadInt(reader); err != nil {
+		return err
+	}
+	if p.Data != 0 {
+		if p.VelocityX, err = codec.ReadInt(reader); err != nil {
+			return err
+		}
+		if p.VelocityY, err = codec.ReadInt(reader); err != nil {
+			return err
+		}
+		if p.VelocityZ, err = codec.ReadInt(reader); err != nil {
+			return err
+		}
 	}
 	return nil
 }
