@@ -6,6 +6,7 @@ import (
 	"github.com/NaymDev/mcgotocol/codec"
 	"github.com/NaymDev/mcgotocol/proto"
 	"github.com/google/uuid"
+	"github.com/ymohl-cl/gonbt"
 )
 
 type ServerKeepAlive struct {
@@ -485,6 +486,64 @@ func (p *ClientSpawnObject) Decode(reader io.Reader) error {
 		if p.VelocityZ, err = codec.ReadInt(reader); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+type UpdateBlockEntityAction uint8
+
+const (
+	UpdateBlockEntityActionSetSpawnPotentials UpdateBlockEntityAction = iota + 1
+	UpdateBlockEntityActionSetCommandBlockText
+	UpdateBlockEntityActionSetBeaconLevel
+	UpdateBlockEntityActionSetRotationAndSkinOfMobHead
+	UpdateBlockEntityActionSetFlowerInPot
+	UpdateBlockEntityActionSetBaseColorAndPatternOfBanner
+)
+
+type ClientUpdateBlockEntity struct {
+	X       int32
+	Y       int32
+	Z       int32
+	Action  UpdateBlockEntityAction
+	NBTData gonbt.Tag
+}
+
+var _ proto.Packet = (*ClientUpdateBlockEntity)(nil)
+
+func (p *ClientUpdateBlockEntity) ID() int32 {
+	return 0x35
+}
+
+func (p *ClientUpdateBlockEntity) Encode(writer io.Writer) error {
+	if err := codec.WritePosition(writer, p.X, p.Y, p.Z); err != nil {
+		return err
+	}
+	if err := codec.WriteUByte(writer, uint8(p.Action)); err != nil {
+		return err
+	}
+	if err := p.NBTData.Write(gonbt.NewWriter(writer), true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ClientUpdateBlockEntity) Decode(reader io.Reader) error {
+	var err error
+	if p.X, p.Y, p.Z, err = codec.ReadPosition(reader); err != nil {
+		return err
+	}
+	if a, err := codec.ReadUByte(reader); err != nil {
+		return err
+	} else {
+		p.Action = UpdateBlockEntityAction(a)
+	}
+	rest, err := io.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+	if p.NBTData, err = gonbt.Unmarshal(rest); err != nil {
+		return err
 	}
 	return nil
 }
